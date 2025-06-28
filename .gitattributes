@@ -1,0 +1,23 @@
+/mvnw text eol=lf
+*.cmd text eol=crlf
+
+* text=auto
+
+# Define arquivos de texto com quebra de linha LF explicitamente (para garantir)
+*.java text eol=lf
+*.xml text eol=lf
+*.properties text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Identifica arquivos binários para o Git (para que ele não tente diff neles)
+*.jar binary
+*.war binary
+*.zip binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
