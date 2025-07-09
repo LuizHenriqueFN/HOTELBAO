@@ -23,4 +23,7 @@ public class Quarto {
     @NotNull(message = "Valor é obrigatório")
     @Column(nullable = false)
     private BigDecimal valor;
+
+    @Column(name = "url_imagem")
+    private String urlDaImagem;
 }
