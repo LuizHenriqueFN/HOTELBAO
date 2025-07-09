@@ -1,16 +1,24 @@
 package com.example.hotelbao.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.hateoas.RepresentationModel;
+
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(callSuper = true) // Adicione o (callSuper = true)
 @Entity
 @Table(name = "quarto")
-public class Quarto {
+public class Quarto extends RepresentationModel<Quarto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
