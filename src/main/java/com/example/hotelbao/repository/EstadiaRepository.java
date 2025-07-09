@@ -3,6 +3,7 @@ package com.example.hotelbao.repository;
 import com.example.hotelbao.model.Estadia;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,4 +22,6 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
 
     @Query("SELECT SUM(e.quarto.valor) FROM Estadia e WHERE e.cliente.id = :clienteId")
     Optional<BigDecimal> sumValorEstadiasByClienteId(@Param("clienteId") Long clienteId);
+
+    boolean existsByQuartoIdAndDataEstadia(Long quartoId, LocalDate dataEstadia);
 }

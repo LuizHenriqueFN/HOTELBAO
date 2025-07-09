@@ -7,11 +7,14 @@ import com.example.hotelbao.model.Cliente;
 import com.example.hotelbao.model.Estadia;
 import com.example.hotelbao.repository.ClienteRepository;
 import com.example.hotelbao.repository.EstadiaRepository;
+import com.example.hotelbao.repository.QuartoRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,9 +28,24 @@ public class EstadiaService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    @Autowired
+    private QuartoRepository quartoRepository;
+
     public Estadia salvar(Estadia estadia) {
         clienteRepository.findById(estadia.getCliente().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado para a estadia."));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Cliente com ID " + estadia.getCliente().getId() + " não encontrado."));
+        quartoRepository.findById(estadia.getQuarto().getId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Quarto com ID " + estadia.getQuarto().getId() + " não encontrado."));
+
+        Long quartoId = estadia.getQuarto().getId();
+        LocalDate data = estadia.getDataEstadia();
+
+        if (estadiaRepository.existsByQuartoIdAndDataEstadia(quartoId, data)) {
+            throw new ValidacaoException("Este quarto já está reservado para esta data.");
+        }
+
         return estadiaRepository.save(estadia);
     }
 
