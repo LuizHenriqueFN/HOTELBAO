@@ -2,12 +2,12 @@ package com.example.hotelbao.service;
 
 import com.example.hotelbao.dto.ItemEstadiaDTO;
 import com.example.hotelbao.dto.NotaFiscalDTO;
+import com.example.hotelbao.exception.ValidacaoException;
 import com.example.hotelbao.model.Cliente;
 import com.example.hotelbao.model.Estadia;
 import com.example.hotelbao.repository.ClienteRepository;
 import com.example.hotelbao.repository.EstadiaRepository;
-import com.exception.ValidacaoException;
-
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +26,17 @@ public class EstadiaService {
     private ClienteRepository clienteRepository;
 
     public Estadia salvar(Estadia estadia) {
+        clienteRepository.findById(estadia.getCliente().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado para a estadia."));
         return estadiaRepository.save(estadia);
     }
 
     public List<Estadia> listarTodos() {
         return estadiaRepository.findAll();
+    }
+
+    public Optional<Estadia> buscarPorId(Long id) {
+        return estadiaRepository.findById(id);
     }
 
     public List<Estadia> listarEstadiasPorCliente(Long clienteId) {

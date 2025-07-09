@@ -6,16 +6,25 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+
+import org.springframework.hateoas.RepresentationModel;
+
 import jakarta.persistence.Column;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "cliente")
-public class Cliente {
+public class Cliente extends RepresentationModel<Cliente> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
