@@ -1,4 +1,4 @@
-package controller;
+package com.example.hotelbao.controller;
 
 import com.example.hotelbao.model.Quarto;
 import com.example.hotelbao.service.QuartoService;

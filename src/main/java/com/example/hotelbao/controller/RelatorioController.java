@@ -1,4 +1,4 @@
-package controller;
+package com.example.hotelbao.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

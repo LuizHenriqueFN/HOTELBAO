@@ -1,4 +1,4 @@
-package controller;
+package com.example.hotelbao.controller;
 
 import com.example.hotelbao.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
