@@ -1,22 +1,14 @@
 package com.example.hotelbao.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-
-import org.springframework.hateoas.RepresentationModel;
-
-import jakarta.persistence.Column;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import org.springframework.hateoas.RepresentationModel;
 
 @Getter
 @Setter
@@ -25,34 +17,39 @@ import jakarta.validation.constraints.Size;
 @Entity
 @Table(name = "cliente")
 public class Cliente extends RepresentationModel<Cliente> {
+
+    @Schema(description = "ID único do cliente gerado pelo banco.", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Schema(description = "Nome completo do cliente.", example = "João da Silva")
     @NotBlank(message = "Nome é obrigatório")
-    @Size(max = 100)
     @Column(nullable = false, length = 100)
     private String nome;
 
+    @Schema(description = "Endereço de e-mail do cliente (deve ser único).", example = "joao.silva@example.com")
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "Email inválido")
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Size(min = 4, message = "A senha deve ter pelo menos 4 caracteres")
+    @Schema(description = "Senha de acesso do cliente. Será criptografada no banco.", example = "senha123", accessMode = Schema.AccessMode.WRITE_ONLY)
     @Column(nullable = false)
     private String senha;
 
+    @Schema(description = "Nome de usuário para login (deve ser único).", example = "joao.silva")
     @NotBlank(message = "Login é obrigatório")
     @Column(nullable = false, unique = true, length = 50)
     private String login;
 
+    @Schema(description = "Número de telefone do cliente.", example = "37999887766")
     @NotBlank(message = "Telefone é obrigatório")
     @Column(nullable = false, length = 20)
     private String telefone;
 
+    @Schema(description = "Endereço residencial completo do cliente.", example = "Rua das Flores, 123, Centro, Formiga-MG")
     @NotBlank(message = "Endereço é obrigatório")
-    @Size(max = 255)
     @Column(nullable = false, length = 255)
     private String endereco;
 

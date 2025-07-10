@@ -1,9 +1,14 @@
 package com.example.hotelbao.controller;
 
+import com.example.hotelbao.dto.ErrorResponseDTO;
 import com.example.hotelbao.model.Quarto;
 import com.example.hotelbao.service.QuartoService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -15,21 +20,26 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Quartos", description = "Endpoints para gerenciamento de quartos")
+@Tag(name = "- Quartos", description = "Endpoints para visualização e gerenciamento de quartos.")
 @RestController
-@RequestMapping("/quartos") // Define o caminho base para todos os endpoints deste controller
+@RequestMapping("/quartos")
 public class QuartoController {
 
     @Autowired
     private QuartoService quartoService;
 
-    @Operation(summary = "Insere um novo quarto")
+    @Operation(summary = "Cria um novo quarto (Apenas Admin)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Quarto criado."),
+            @ApiResponse(responseCode = "403", description = "Acesso negado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))), })
     @PostMapping
     public Quarto inserirQuarto(@RequestBody Quarto quarto) {
         return quartoService.salvarQuarto(quarto);
     }
 
-    @Operation(summary = "Lista todos os quartos cadastrados com links HATEOAS")
+    @Operation(summary = "Lista todos os quartos disponíveis (Público)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de quartos retornada.") })
     @GetMapping
     public ResponseEntity<List<Quarto>> listarQuartos() {
         List<Quarto> quartos = quartoService.listarTodos();
@@ -43,7 +53,10 @@ public class QuartoController {
         return ResponseEntity.ok(quartos);
     }
 
-    @Operation(summary = "Busca um quarto específico por ID com links HATEOAS")
+    @Operation(summary = "Busca um quarto por ID (Público)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Quarto encontrado."),
+            @ApiResponse(responseCode = "404", description = "Quarto não encontrado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))) })
     @GetMapping("/{id}")
     public ResponseEntity<Quarto> buscarQuartoPorId(@PathVariable Long id) {
         return quartoService.buscarPorId(id)
@@ -54,7 +67,11 @@ public class QuartoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Altera os dados de um quarto existente")
+    @Operation(summary = "Altera um quarto existente (Apenas Admin)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Quarto atualizado."),
+            @ApiResponse(responseCode = "404", description = "Quarto não encontrado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))),
+            @ApiResponse(responseCode = "403", description = "Acesso negado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))) })
     @PutMapping("/{id}")
     public ResponseEntity<Quarto> alterarQuarto(@PathVariable Long id, @RequestBody Quarto quartoDetails) {
         try {
@@ -65,7 +82,11 @@ public class QuartoController {
         }
     }
 
-    @Operation(summary = "Deleta um quarto existente")
+    @Operation(summary = "Deleta um quarto (Apenas Admin)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Quarto deletado."),
+            @ApiResponse(responseCode = "404", description = "Quarto não encontrado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))),
+            @ApiResponse(responseCode = "403", description = "Acesso negado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))) })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarQuarto(@PathVariable Long id) {
         quartoService.deletarQuarto(id);
