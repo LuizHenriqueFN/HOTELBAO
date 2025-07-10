@@ -41,8 +41,9 @@ public class EstadiaService {
 
         Long quartoId = estadia.getQuarto().getId();
         LocalDate data = estadia.getDataEstadia();
+        Long estadiaId = estadia.getId();
 
-        if (estadiaRepository.existsByQuartoIdAndDataEstadia(quartoId, data)) {
+        if (estadiaRepository.existsConflict(quartoId, data, estadiaId)) {
             throw new ValidacaoException("Este quarto já está reservado para esta data.");
         }
 

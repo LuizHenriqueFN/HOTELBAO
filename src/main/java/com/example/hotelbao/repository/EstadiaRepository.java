@@ -23,5 +23,12 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
     @Query("SELECT SUM(e.quarto.valor) FROM Estadia e WHERE e.cliente.id = :clienteId")
     Optional<BigDecimal> sumValorEstadiasByClienteId(@Param("clienteId") Long clienteId);
 
-    boolean existsByQuartoIdAndDataEstadia(Long quartoId, LocalDate dataEstadia);
+    @Query("SELECT EXISTS(" +
+            "SELECT 1 FROM Estadia e WHERE e.quarto.id = :quartoId " +
+            "AND e.dataEstadia = :dataEstadia " +
+            "AND (:id IS NULL OR e.id <> :id)" +
+            ")")
+    boolean existsConflict(@Param("quartoId") Long quartoId,
+            @Param("dataEstadia") LocalDate dataEstadia,
+            @Param("id") Long id);
 }
