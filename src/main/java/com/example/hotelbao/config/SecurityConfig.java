@@ -24,42 +24,38 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // A sua configuração de autorização está correta. O problema não está aqui.
-        // Mantemos a versão estável que definimos antes.
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         // 1. Endpoints Públicos
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/clientes").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/quartos/**").permitAll()
 
                         // 2. Regras Específicas
                         .requestMatchers(HttpMethod.GET, "/clientes/me").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/clientes").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/estadias").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
                         .requestMatchers("/relatorios/**").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
 
-                        // 3. Regras Gerais de Admin
+                        // 3. Regras de Admin
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/estadias", "/estadias/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/estadias", "/estadias/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/quartos/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/estadias/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/clientes/**").hasAuthority("ROLE_ADMIN")
 
                         // 4. Qualquer outra requisição é negada
-                        .anyRequest().denyAll()
-                );
+                        .anyRequest().denyAll());
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // BEAN ADICIONADO PARA CONFIGURAR CORRETAMENTE O AUTHENTICATION MANAGER
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

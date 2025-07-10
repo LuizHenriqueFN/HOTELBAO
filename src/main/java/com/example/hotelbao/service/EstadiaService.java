@@ -32,6 +32,9 @@ public class EstadiaService {
     private QuartoRepository quartoRepository;
 
     public Estadia salvar(Estadia estadia) {
+        if (estadia.getDataEstadia() != null && estadia.getDataEstadia().isBefore(LocalDate.now())) {
+            throw new ValidacaoException("Não é possível fazer reservas para datas passadas.");
+        }
         clienteRepository.findById(estadia.getCliente().getId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Cliente com ID " + estadia.getCliente().getId() + " não encontrado."));
@@ -56,6 +59,13 @@ public class EstadiaService {
 
     public Optional<Estadia> buscarPorId(Long id) {
         return estadiaRepository.findById(id);
+    }
+
+    public void deletar(Long id) {
+        if (!estadiaRepository.existsById(id)) {
+            throw new EntityNotFoundException("Estadia com ID " + id + " não encontrada.");
+        }
+        estadiaRepository.deleteById(id);
     }
 
     public List<Estadia> listarEstadiasPorCliente(Long clienteId) {
