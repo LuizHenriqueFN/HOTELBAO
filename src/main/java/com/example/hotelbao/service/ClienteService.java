@@ -47,4 +47,8 @@ public class ClienteService {
         }
         clienteRepository.deleteById(id);
     }
+
+    public Optional<Cliente> buscarPorLogin(String login) {
+        return clienteRepository.findByLogin(login);
+    }
 }

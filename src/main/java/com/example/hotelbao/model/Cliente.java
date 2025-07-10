@@ -1,22 +1,21 @@
 package com.example.hotelbao.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-
-import org.springframework.hateoas.RepresentationModel;
-
-import jakarta.persistence.Column;
+import com.example.hotelbao.security.Role;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,13 +23,12 @@ import jakarta.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "cliente")
-public class Cliente extends RepresentationModel<Cliente> {
+public class Cliente extends RepresentationModel<Cliente> implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "Nome é obrigatório")
-    @Size(max = 100)
     @Column(nullable = false, length = 100)
     private String nome;
 
@@ -39,7 +37,6 @@ public class Cliente extends RepresentationModel<Cliente> {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Size(min = 4, message = "A senha deve ter pelo menos 4 caracteres")
     @Column(nullable = false)
     private String senha;
 
@@ -52,14 +49,55 @@ public class Cliente extends RepresentationModel<Cliente> {
     private String telefone;
 
     @NotBlank(message = "Endereço é obrigatório")
-    @Size(max = 255)
     @Column(nullable = false, length = 255)
     private String endereco;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @PrePersist
     public void definirSenhaPadrao() {
         if (this.senha == null || this.senha.isBlank()) {
             this.senha = this.telefone;
         }
+    }
+
+    // Implementação dos métodos do UserDetails
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.role == null) {
+            return List.of(new SimpleGrantedAuthority(Role.ROLE_CLIENTE.name()));
+        }
+        return List.of(new SimpleGrantedAuthority(this.role.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.login;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

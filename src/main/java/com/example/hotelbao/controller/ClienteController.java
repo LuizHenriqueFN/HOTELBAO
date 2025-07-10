@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -68,5 +70,14 @@ public class ClienteController {
     public ResponseEntity<Void> deletarCliente(@PathVariable Long id) {
         clienteService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Retorna os dados do cliente autenticado")
+    @GetMapping("/me")
+    public ResponseEntity<Cliente> getAuthenticatedCliente(Authentication authentication) {
+        String login = authentication.getName();
+        return clienteService.buscarPorLogin(login)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

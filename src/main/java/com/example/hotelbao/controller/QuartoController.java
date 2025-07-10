@@ -17,7 +17,7 @@ import java.util.List;
 
 @Tag(name = "Quartos", description = "Endpoints para gerenciamento de quartos")
 @RestController
-@RequestMapping("/quartos") // Define o caminho base para todos os endpoints deste controller
+@RequestMapping("/quartos")
 public class QuartoController {
 
     @Autowired
